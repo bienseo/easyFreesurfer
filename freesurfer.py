@@ -15,10 +15,13 @@ def findT1Dir(dir):
     try:
         for root,dirs,files in os.walk(dir):
             if t1.search(os.path.basename(root)):
-                print root
-                t1Directory = root
-                t1Dcm = os.listdir(root)[0]
-                t1DcmAddress = os.path.join(t1Directory,t1Dcm)
+                if [x for x in files if not x.startswith('.')][0].endswith('nii.gz'): #if it's nifti directory
+                    pass
+                else: #if it's dicom directory
+                    print root
+                    t1Dcm = [x for x in files if not x.startswith('.')][0]
+                    t1Directory = root
+                    t1DcmAddress = os.path.join(t1Directory,t1Dcm)
     except:
         sys.exit('Arrange T1 dicoms in the T1 directory')
 
@@ -29,7 +32,10 @@ def main(args):
     #print subjAddress
     t1Directory,t1DcmAddress = findT1Dir(subjAddress)
 
-    outDirectory = os.path.dirname(t1Directory)
+    if 'dicom' in t1Directory:
+        outDirectory = os.path.dirname(os.path.dirname(t1Directory))
+    else:
+        outDirectory = os.path.dirname(t1Directory)
 
     os.environ["FREESURFER_HOME"] = '/Applications/freesurfer'
     os.environ["SUBJECTS_DIR"] = '{0}'.format(outDirectory)
@@ -37,8 +43,8 @@ def main(args):
     freesurferScreenOutput = os.popen('recon-all -all -i {t1DcmAddress} -subjid freesurfer'.format(
             t1DcmAddress=t1DcmAddress)).read()
 
-    print t1Directory,t1DcmAddress,freesurferScreenOutput
-
+    with open('{0}/freesurfer/log.txt'.format(outDirectory),'w') as f:
+        f.write(freesurferScreenOutput)
 
 
 if __name__=='__main__':

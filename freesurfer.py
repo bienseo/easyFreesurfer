@@ -44,7 +44,7 @@ def main(args):
     freesurferScreenOutput = os.popen('recon-all -all -i "{t1DcmAddress}" -subjid freesurfer'.format(
             t1DcmAddress=t1DcmAddress)).read()
 
-    with open('{0}/freesurferLog.txt'.format(outDirectory),'w') as f:
+    with open('{0}/freesufer/freesurferLog.txt'.format(outDirectory),'w') as f:
         f.write(freesurferScreenOutput)
 
 

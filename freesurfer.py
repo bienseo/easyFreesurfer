@@ -11,10 +11,11 @@ import textwrap
 def findT1Dir(dir):
     #Regrex for T1
     t1 = re.compile(r'tfl|[^s]t1|t1',re.IGNORECASE)
+    scout = re.compile(r'scout',re.IGNORECASE)
 
     try:
         for root,dirs,files in os.walk(dir):
-            if t1.search(os.path.basename(root)):
+            if t1.search(os.path.basename(root)) and not scout.search(os.path.basename(root)):
                 if [x for x in files if not x.startswith('.')][0].endswith('nii.gz'): #if it's nifti directory
                     pass
                 else: #if it's dicom directory

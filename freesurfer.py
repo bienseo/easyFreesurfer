@@ -20,7 +20,7 @@ def findT1Dir(dir):
                     pass
                 else: #if it's dicom directory
                     print root
-                    t1Dcm = [x for x in files if not x.startswith('.')][0]
+                    t1Dcm = [x for x in files if not x.startswith('.')][-1]
                     t1Directory = root
                     t1DcmAddress = os.path.join(t1Directory,t1Dcm)
     except:

@@ -41,7 +41,7 @@ def main(args):
     os.environ["FREESURFER_HOME"] = '/Applications/freesurfer'
     os.environ["SUBJECTS_DIR"] = '{0}'.format(outDirectory)
 
-    freesurferScreenOutput = os.popen('recon-all -all -i "{t1DcmAddress}" -subjid freesurfer'.format(
+    freesurferScreenOutput = os.popen('recon-all -all -i "{t1DcmAddress}" -subjid FREESURFER'.format(
             t1DcmAddress=t1DcmAddress)).read()
 
     with open('{0}/freesurferLog.txt'.format(outDirectory),'w') as f:

@@ -32,7 +32,11 @@ def findT1Dir(dir,nifti):
     except:
         sys.exit('Arrange T1 dicoms in the T1 directory')
 
-    return t1Directory,t1DcmAddress
+
+    if t1DcmAddress and t1DcmAddress:
+        return t1Directory,t1DcmAddress
+    else:
+        sys.exit('T1 directory not found')
 
 def main(args):
     subjAddress = args.directory

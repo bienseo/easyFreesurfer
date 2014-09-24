@@ -1,4 +1,4 @@
-#!/Users/admin/anaconda/bin/python
+#!/ccnc_bin/venv/bin/python2.7
 # -*- coding: utf-8 -*-
 
 import re

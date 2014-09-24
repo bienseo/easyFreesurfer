@@ -76,7 +76,7 @@ if __name__=='__main__':
                     '''.format(codeName=os.path.basename(__file__))))
 
             #epilog="By Kevin, 26th May 2014")
-    parser.add_argument('-dir','--directory',help='Data directory location, default = pwd',default=os.getcwd())
+    parser.add_argument('-dir','--directory',help='Data directory location')
     parser.add_argument('-n','--nifti',help="This option searches for 'T1' directory and uses co*.nii.gz within the T1 directory to run freesurfer",action='store_true')
     args = parser.parse_args()
 

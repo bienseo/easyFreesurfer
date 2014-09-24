@@ -19,7 +19,7 @@ def findT1Dir(dir,nifti):
                 if [x for x in files if not x.startswith('.')][0].endswith('nii.gz'): #if it's nifti directory
                     if nifti:
                         print root
-                        t1Dcm = [x for x in files if x.startswith('co')][0]
+                        t1Dcm = [x for x in files][0]
                         t1Directory = root
                         t1DcmAddress = os.path.join(t1Directory,t1Dcm)
                     else:

@@ -49,7 +49,11 @@ def findT1Dir(dir,nifti):
         if t1DcmAddress and t1DcmAddress:
             return t1Directory,t1DcmAddress
     except:
-        sys.exit('T1 directory not found')
+        toPrint = 'T1 directory not found, \
+                or dicom is not found in T1 directory. \
+                Use -n flag for nifti'
+        sys.exit(re.sub('\s+',' ',toPrint))
+
 
 
 def main(args):
@@ -74,8 +78,8 @@ def main(args):
         FS_out_name = 'FREESURFER'
 
     #for server
-    if 'dicom' in t1Directory:
-        FS_out_address = os.path.dirname(os.path.dirname(t1Directory))
+    #if 'dicom' in FS_out_address:
+        #FS_out_address = os.path.dirname(os.path.dirname(t1Directory))
 
     os.environ["FREESURFER_HOME"] = '/Applications/freesurfer'
     os.environ["SUBJECTS_DIR"] = '{0}'.format(FS_out_address)
@@ -85,7 +89,9 @@ def main(args):
             -i "{file_input_address}" \
             -subjid {FS_out_name}'.format(file_input_address=file_input_address,
                                           FS_out_name=FS_out_name)
+
     command = re.sub('\s+',' ',command)
+    print command
 
     freesurferScreenOutput = os.popen(command).read()
 

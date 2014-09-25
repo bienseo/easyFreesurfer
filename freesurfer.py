@@ -95,7 +95,7 @@ def main(args):
 
     freesurferScreenOutput = os.popen(command).read()
 
-    with open('{0}/freesurferLog.txt'.format(outDirectory),'w') as f:
+    with open('{0}/freesurferLog.txt'.format(FS_out_address),'w') as f:
         f.write(freesurferScreenOutput)
 
 

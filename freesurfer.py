@@ -7,6 +7,15 @@ import os
 import argparse
 import textwrap
 
+def walklevel(some_dir, level=1):
+    some_dir = some_dir.rstrip(os.path.sep)
+    assert os.path.isdir(some_dir)
+    num_sep = some_dir.count(os.path.sep)
+    for root, dirs, files in os.walk(some_dir):
+        yield root, dirs, files
+        num_sep_this = root.count(os.path.sep)
+        if num_sep + level <= num_sep_this:
+            del dirs[:]
 
 def findT1Dir(dir,nifti):
     #Regrex for T1
@@ -14,7 +23,7 @@ def findT1Dir(dir,nifti):
     scout = re.compile(r'scout',re.IGNORECASE)
 
     try:
-        for root,dirs,files in os.walk(dir):
+        for root,dirs,files in walklevel(dir, level=1):
             if t1.search(os.path.basename(root)) and not scout.search(os.path.basename(root)):
                 if [x for x in files if not x.startswith('.')][0].endswith('nii.gz'): #if it's nifti directory
                     if nifti:
@@ -42,38 +51,43 @@ def findT1Dir(dir,nifti):
     except:
         sys.exit('T1 directory not found')
 
+
 def main(args):
-    if args.file_input:
-        outDirectory = os.path.dirname(args.file_input)
-        os.environ["FREESURFER_HOME"] = '/Applications/freesurfer'
-        os.environ["SUBJECTS_DIR"] = '{0}'.format(outDirectory)
-        command = 'recon-all \
-                -all \
-                -i "{file_input}" \
-                -subjid FREESURFER'.format(file_input=args.file_input)
-        command = re.sub('\s+',' ',command)
-        print command
-        sys.exit('Done')
-        #freesurferScreenOutput = os.popen(command).read()
 
-    subjAddress = args.directory
-    #print subjAddress
-    t1Directory,t1DcmAddress = findT1Dir(subjAddress,args.nifti)
-
-    if 'dicom' in t1Directory:
-        outDirectory = os.path.dirname(os.path.dirname(t1Directory))
+    # t1Directory, file_input_address grep
+    if args.directory:
+        FS_out_address,file_input_address = findT1Dir(args.directory,
+                                                   args.nifti)
+    elif args.cwd:
+        FS_out_address,file_input_address = findT1Dir(os.getcwd(),
+                                                   args.nifti)
+    elif args.file_input:
+        FS_out_address,file_input_address = (os.path.dirname(args.file_input),
+                                          args.file_input)
     else:
-        outDirectory = os.path.dirname(t1Directory)
+        sys.exit('Please specify one of the input options, [-i, -c, -d]')
+
+    if args.output:
+        FS_out_address = os.path.dirname(args.output)
+        FS_out_name = os.path.basename(args.output)
+    else:
+        FS_out_name = 'FREESURFER'
+
+    #for server
+    if 'dicom' in t1Directory:
+        FS_out_address = os.path.dirname(os.path.dirname(t1Directory))
 
     os.environ["FREESURFER_HOME"] = '/Applications/freesurfer'
-    os.environ["SUBJECTS_DIR"] = '{0}'.format(outDirectory)
+    os.environ["SUBJECTS_DIR"] = '{0}'.format(FS_out_address)
 
-    if args.nifti:
-        freesurferScreenOutput = os.popen('recon-all -all -i "{t1DcmAddress}" -subjid FREESURFER'.format(
-                t1DcmAddress=t1DcmAddress)).read()
-    else:
-        freesurferScreenOutput = os.popen('recon-all -all -i "{t1DcmAddress}" -subjid FREESURFER'.format(
-                t1DcmAddress=t1DcmAddress)).read()
+    command = 'recon-all \
+            -all \
+            -i "{file_input_address}" \
+            -subjid {FS_out_name}'.format(file_input_address=file_input_address,
+                                          FS_out_name=FS_out_name)
+    command = re.sub('\s+',' ',command)
+
+    freesurferScreenOutput = os.popen(command).read()
 
     with open('{0}/freesurferLog.txt'.format(outDirectory),'w') as f:
         f.write(freesurferScreenOutput)
@@ -100,16 +114,16 @@ if __name__=='__main__':
     parser.add_argument('-d','--directory',
             help='Data input directory location')
     parser.add_argument('-o','--output',
-            help='Output directory full name',default='FREESURFER')
+            help='Output directory')
 
     args = parser.parse_args()
 
-    # If no options --> raise error
-    if not args.nifti and \
-        not args.file_input and \
-        not args.cwd and \
-        not args.directory:
-        sys.exit('Please specify (at least an option)')
-
+    # Check for the double selection of the options
+    if args.directory and args.file_input:
+        sys.exit('Please choose one of the input options')
+    elif args.directory and args.cwd:
+        sys.exit('Please choose one of the input options')
+    elif args.file_input and args.cwd:
+        sys.exit('Please choose one of the input options')
     else:
         main(args)

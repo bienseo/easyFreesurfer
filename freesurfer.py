@@ -43,6 +43,19 @@ def findT1Dir(dir,nifti):
         sys.exit('T1 directory not found')
 
 def main(args):
+    if args.file_input:
+        outDirectory = os.path.dirname(args.file_input)
+        os.environ["FREESURFER_HOME"] = '/Applications/freesurfer'
+        os.environ["SUBJECTS_DIR"] = '{0}'.format(outDirectory)
+        command = 'recon-all \
+                -all \
+                -i "{file_input}" \
+                -subjid FREESURFER'.format(file_input=args.file_input)
+        command = re.sub('\s+',' ',command)
+        print command
+        sys.exit('Done')
+        #freesurferScreenOutput = os.popen(command).read()
+
     subjAddress = args.directory
     #print subjAddress
     t1Directory,t1DcmAddress = findT1Dir(subjAddress,args.nifti)
@@ -76,9 +89,27 @@ if __name__=='__main__':
                     '''.format(codeName=os.path.basename(__file__))))
 
             #epilog="By Kevin, 26th May 2014")
-    parser.add_argument('-dir','--directory',help='Data directory location')
-    parser.add_argument('-n','--nifti',help="This option searches for 'T1' directory and uses co*.nii.gz within the T1 directory to run freesurfer",action='store_true')
+    parser.add_argument('-n','--nifti',
+            help="Allows nifti input",
+            action='store_true')
+    parser.add_argument('-i','--file_input',
+            help="Specify the input(dicom or nifti)")
+    parser.add_argument('-c','--cwd',
+            help="Search all 'T1' directory and run freesurfer under the current location",
+            action='store_true')
+    parser.add_argument('-d','--directory',
+            help='Data input directory location')
+    parser.add_argument('-o','--output',
+            help='Output directory full name',default='FREESURFER')
+
     args = parser.parse_args()
 
-    main(args)
+    # If no options --> raise error
+    if not args.nifti and \
+        not args.file_input and \
+        not args.cwd and \
+        not args.directory:
+        sys.exit('Please specify (at least an option)')
 
+    else:
+        main(args)

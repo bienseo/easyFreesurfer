@@ -65,7 +65,7 @@ def main(args):
         FS_out_address,file_input_address = (os.path.dirname(args.file_input),
                                           args.file_input)
     else:
-        sys.exit('Please specify one of the input options, [-i, -c, -d] or --help')
+        sys.exit('Please specify one of the input options, [-i, -c, -d]')
 
     if args.output:
         FS_out_address = os.path.dirname(args.output)

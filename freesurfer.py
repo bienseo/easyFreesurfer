@@ -95,9 +95,6 @@ def main(args):
 
     freesurferScreenOutput = os.popen(command).read()
 
-    with open('{0}/freesurferLog.txt'.format(FS_out_address),'w') as f:
-        f.write(freesurferScreenOutput)
-
 
 if __name__=='__main__':
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,

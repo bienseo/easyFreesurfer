@@ -56,24 +56,22 @@ def findT1Dir(dir,nifti):
 
 
 
-def main(args):
+def main(nifti, file_input, cwd, directory, output):
 
     # t1Directory, file_input_address grep
-    if args.directory:
-        FS_out_address,file_input_address = findT1Dir(args.directory,
-                                                   args.nifti)
-    elif args.cwd:
-        FS_out_address,file_input_address = findT1Dir(os.getcwd(),
-                                                   args.nifti)
-    elif args.file_input:
-        FS_out_address,file_input_address = (os.path.dirname(args.file_input),
-                                          args.file_input)
+    if directory:
+        FS_out_address,file_input_address = findT1Dir(directory, nifti)
+    elif cwd:
+        FS_out_address,file_input_address = findT1Dir(os.getcwd(), nifti)
+    elif file_input:
+        FS_out_address,file_input_address = (os.path.dirname(file_input),
+                                          file_input)
     else:
         sys.exit('Please specify one of the input options, [-i, -c, -d] or --help')
 
-    if args.output:
-        FS_out_address = os.path.dirname(args.output)
-        FS_out_name = os.path.basename(args.output)
+    if output:
+        FS_out_address = os.path.dirname(output)
+        FS_out_name = os.path.basename(output)
     else:
         FS_out_name = 'FREESURFER'
 
@@ -129,4 +127,5 @@ if __name__=='__main__':
     elif args.file_input and args.cwd:
         sys.exit('Please choose one of the input options')
     else:
-        main(args)
+
+        main(args.nifti, args.file_intput, args.cwd, args.directory, args.output)

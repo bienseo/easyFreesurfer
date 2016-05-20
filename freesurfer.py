@@ -55,29 +55,14 @@ def findT1Dir(dir,nifti):
         sys.exit(re.sub('\s+',' ',toPrint))
 
 
-
-def main(nifti, file_input, cwd, directory, output):
-
-    # t1Directory, file_input_address grep
-    if directory:
-        FS_out_address,file_input_address = findT1Dir(directory, nifti)
-    elif cwd:
-        FS_out_address,file_input_address = findT1Dir(os.getcwd(), nifti)
-    elif file_input:
-        FS_out_address,file_input_address = (os.path.dirname(file_input),
-                                          file_input)
+def main(inputValue, output):
+    if os.path.isdir(inputValue):
+        FS_out_address = inputValue
+        file_input_address = [x for x in os.listdir(inputValue) \
+                if re.search('dcm|ima|nii.gz', x, re.IGNORECASE)][-1]
     else:
-        sys.exit('Please specify one of the input options, [-i, -c, -d] or --help')
-
-    if output:
-        FS_out_address = os.path.dirname(output)
-        FS_out_name = os.path.basename(output)
-    else:
-        FS_out_name = 'FREESURFER'
-
-    #for server
-    #if 'dicom' in FS_out_address:
-        #FS_out_address = os.path.dirname(os.path.dirname(t1Directory))
+        FS_out_address = os.path.dirname(inputValue)
+        file_input_address = inputValue
 
     os.environ["FREESURFER_HOME"] = '/Applications/freesurfer'
     os.environ["SUBJECTS_DIR"] = '{0}'.format(FS_out_address)
@@ -104,28 +89,17 @@ if __name__=='__main__':
                     '''.format(codeName=os.path.basename(__file__))))
 
             #epilog="By Kevin, 26th May 2014")
-    parser.add_argument('-n','--nifti',
-            help="Allows nifti input",
-            action='store_true')
-    parser.add_argument('-i','--file_input',
-            help="Specify the input(dicom or nifti)")
-    parser.add_argument('-c','--cwd',
-            help="Search all 'T1' directory and run freesurfer under the current location",
-            action='store_true')
-    parser.add_argument('-d','--directory',
-            help='Data input directory location')
+    parser.add_argument('-i','--input',
+            help='Input data either dicom, nifti or T1 directory',
+            default=os.getcwd())
     parser.add_argument('-o','--output',
-            help='Output directory')
+            help='Output directory',
+            default='FREESURFER')
 
     args = parser.parse_args()
 
     # Check for the double selection of the options
-    if args.directory and args.file_input:
-        sys.exit('Please choose one of the input options')
-    elif args.directory and args.cwd:
-        sys.exit('Please choose one of the input options')
-    elif args.file_input and args.cwd:
+    if not args.nifti and not args.dicom:
         sys.exit('Please choose one of the input options')
     else:
-
-        main(args.nifti, args.file_input, args.cwd, args.directory, args.output)
+        main(args.input, args.output)

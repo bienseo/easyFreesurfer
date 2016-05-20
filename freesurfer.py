@@ -128,4 +128,4 @@ if __name__=='__main__':
         sys.exit('Please choose one of the input options')
     else:
 
-        main(args.nifti, args.file_intput, args.cwd, args.directory, args.output)
+        main(args.nifti, args.file_input, args.cwd, args.directory, args.output)

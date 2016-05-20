@@ -64,17 +64,22 @@ def main(inputValue, output):
         FS_out_address = os.path.dirname(inputValue)
         file_input_address = inputValue
 
+    if FS_out_address == '':
+        FS_out_address = os.getcwd()
+
     os.environ["FREESURFER_HOME"] = '/Applications/freesurfer'
     os.environ["SUBJECTS_DIR"] = '{0}'.format(FS_out_address)
+
 
     command = 'recon-all \
             -all \
             -i "{file_input_address}" \
             -subjid {FS_out_name}'.format(file_input_address=file_input_address,
-                                          FS_out_name=FS_out_name)
+                                          FS_out_name=output)
 
     command = re.sub('\s+',' ',command)
     print command
+    print output
 
     freesurferScreenOutput = os.popen(command).read()
 
@@ -99,7 +104,4 @@ if __name__=='__main__':
     args = parser.parse_args()
 
     # Check for the double selection of the options
-    if not args.nifti and not args.dicom:
-        sys.exit('Please choose one of the input options')
-    else:
-        main(args.input, args.output)
+    main(args.input, args.output)
